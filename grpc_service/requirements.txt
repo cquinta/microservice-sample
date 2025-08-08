@@ -1,0 +1,3 @@
+# grpc_service/requirements.txt
+grpcio
+grpcio-tools
