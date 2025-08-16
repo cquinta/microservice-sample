@@ -1,0 +1,82 @@
+# Nome do workflow que aparecerá na aba "Actions" do GitHub
+name: Build and Push Docker Images
+
+# Gatilho: aciona o workflow em qualquer push para a branch 'main'
+on:
+  push:
+    branches:
+      - '*'
+
+# Define os jobs que serão executados
+jobs:
+  # Job para construir e publicar a imagem da API Gateway
+  build-and-push-api:
+    runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
+    steps:
+      - name: Checar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Fazer login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Construir e publicar a imagem da API
+        uses: docker/build-push-action@v6
+        with:
+          context: ./api # Define o contexto de build para a pasta 'api'
+          push: true
+          tags: |
+            
+            ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:${{ env.BRANCH_NAME }}
+            cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp:buildcache
+            cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp:buildcache,mode=max
+
+  # Job para construir e publicar a imagem do serviço de adição
+ 
+   build-and-push-soma:
+    runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
+    steps:
+      - name: Checar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Fazer login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Construir e publicar a imagem da API
+        uses: docker/build-push-action@v6
+        with:
+          context: ./grpc_service_soma # Define o contexto de build para a pasta 'api'
+          push: true
+          tags: |
+            
+            ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:${{ env.BRANCH_NAME }}
+            cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache
+            cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache,mode=max
+
+build-and-push-sub:
+    runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
+    steps:
+      - name: Checar o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Fazer login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Construir e publicar a imagem da API
+        uses: docker/build-push-action@v6
+        with:
+          context: ./grpc_service_sub # Define o contexto de build para a pasta 'api'
+          push: true
+          tags: |
+            
+            ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:${{ env.BRANCH_NAME }}
+            cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache
+            cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache,mode=max
