@@ -9,7 +9,6 @@ on:
 
 # Define os jobs que serão executados
 jobs:
-  # Job para construir e publicar a imagem da API Gateway
   build-and-push-api:
     runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
     steps:
