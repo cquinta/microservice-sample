@@ -1,16 +1,16 @@
-# Nome do workflow que aparecerá na aba "Actions" do GitHub
 name: Build and Push Docker Images
 
-# Gatilho: aciona o workflow em qualquer push para a branch 'main'
 on:
   push:
     branches:
       - '*'
 
-# Define os jobs que serão executados
+env:
+  BRANCH_NAME: ${{ github.ref_name }}
+
 jobs:
   build-and-push-api:
-    runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
+    runs-on: ubuntu-latest
     steps:
       - name: Checar o código do repositório
         uses: actions/checkout@v4
@@ -24,18 +24,14 @@ jobs:
       - name: Construir e publicar a imagem da API
         uses: docker/build-push-action@v6
         with:
-          context: ./api # Define o contexto de build para a pasta 'api'
+          context: ./api_service
           push: true
-          tags: |
-            
-            ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:${{ env.BRANCH_NAME }}
-            cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp:buildcache
-            cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp:buildcache,mode=max
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:${{ env.BRANCH_NAME }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache,mode=max
 
-  # Job para construir e publicar a imagem do serviço de adição
- 
-   build-and-push-soma:
-    runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
+  build-and-push-soma:
+    runs-on: ubuntu-latest
     steps:
       - name: Checar o código do repositório
         uses: actions/checkout@v4
@@ -46,19 +42,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Construir e publicar a imagem da API
+      - name: Construir e publicar a imagem do serviço de soma
         uses: docker/build-push-action@v6
         with:
-          context: ./grpc_service_soma # Define o contexto de build para a pasta 'api'
+          context: ./grpc_service_soma
           push: true
-          tags: |
-            
-            ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:${{ env.BRANCH_NAME }}
-            cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache
-            cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache,mode=max
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:${{ env.BRANCH_NAME }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache,mode=max
 
-build-and-push-sub:
-    runs-on: ubuntu-latest # Usa a última versão do Ubuntu como ambiente de execução
+  build-and-push-sub:
+    runs-on: ubuntu-latest
     steps:
       - name: Checar o código do repositório
         uses: actions/checkout@v4
@@ -69,13 +63,11 @@ build-and-push-sub:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Construir e publicar a imagem da API
+      - name: Construir e publicar a imagem do serviço de subtração
         uses: docker/build-push-action@v6
         with:
-          context: ./grpc_service_sub # Define o contexto de build para a pasta 'api'
+          context: ./grpc_service_sub
           push: true
-          tags: |
-            
-            ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:${{ env.BRANCH_NAME }}
-            cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache
-            cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache,mode=max
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:${{ env.BRANCH_NAME }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache,mode=max
