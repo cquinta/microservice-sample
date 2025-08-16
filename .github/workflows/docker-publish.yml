@@ -27,8 +27,8 @@ jobs:
           context: ./api_service
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:${{ env.BRANCH_NAME }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache,mode=max
+         # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache
+         # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache,mode=max
 
   build-and-push-soma:
     runs-on: ubuntu-latest
@@ -48,8 +48,8 @@ jobs:
           context: ./grpc_service_soma
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:${{ env.BRANCH_NAME }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache,mode=max
+          #cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache
+          #cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache,mode=max
 
   build-and-push-sub:
     runs-on: ubuntu-latest
@@ -69,5 +69,5 @@ jobs:
           context: ./grpc_service_sub
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:${{ env.BRANCH_NAME }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache,mode=max
+          #cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache
+          #cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache,mode=max
