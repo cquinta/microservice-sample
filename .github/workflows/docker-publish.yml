@@ -26,7 +26,7 @@ jobs:
         with:
           context: ./msapi
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:${{ env.BRANCH_NAME }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:${{ github.sha }}
          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache
          # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache,mode=max
 
@@ -47,7 +47,7 @@ jobs:
         with:
           context: ./mssum
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:${{ env.BRANCH_NAME }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:${{ github.sha }}
           #cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache
           #cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache,mode=max
 
@@ -68,6 +68,6 @@ jobs:
         with:
           context: ./mssub
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:${{ env.BRANCH_NAME }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:${{ github.sha }}
           #cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache
           #cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache,mode=max
