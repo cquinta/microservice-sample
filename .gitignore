@@ -1,1 +1,4 @@
 *command*
+.venv
+__pycache__
+.python*

@@ -1,6 +1,0 @@
-# api_service/requirements.txt
-fastapi
-uvicorn[standard]
-grpcio
-grpcio-tools
-pydantic
