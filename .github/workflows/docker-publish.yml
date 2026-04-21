@@ -24,7 +24,7 @@ jobs:
       - name: Construir e publicar a imagem da API
         uses: docker/build-push-action@v6
         with:
-          context: ./api_service
+          context: ./msapi
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:${{ env.BRANCH_NAME }}
          # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache
@@ -45,7 +45,7 @@ jobs:
       - name: Construir e publicar a imagem do serviço de soma
         uses: docker/build-push-action@v6
         with:
-          context: ./grpc_service_soma
+          context: ./mssum
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:${{ env.BRANCH_NAME }}
           #cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache
@@ -66,7 +66,7 @@ jobs:
       - name: Construir e publicar a imagem do serviço de subtração
         uses: docker/build-push-action@v6
         with:
-          context: ./grpc_service_sub
+          context: ./mssub
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:${{ env.BRANCH_NAME }}
           #cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache
