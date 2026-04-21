@@ -1,0 +1,9 @@
+[project]
+name = "microservice-sub"
+version = "0.1.0"
+description = "Micosserviço de subtração"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]",
+]
