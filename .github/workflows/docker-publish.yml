@@ -41,6 +41,19 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Configurar ambiente Python para testes
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Você pode ajustar para a versão que está usando
+
+      - name: Instalar dependências e executar testes
+        run: |
+          python -m pip install --upgrade pip
+          pip install fastapi pydantic httpx pytest
+          cd ./mssum
+          pytest -v app/test_main.py
+
+
       - name: Construir e publicar a imagem do serviço de soma
         uses: docker/build-push-action@v6
         with:
