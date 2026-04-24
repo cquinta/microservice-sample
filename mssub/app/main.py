@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI
 
 from .routers import sub
 
-app = FastAPI(tittle="Sub Microsservice")
+app = FastAPI(title="Sub Microsservice")
 
 app.include_router(sub.router)
 
