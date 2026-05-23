@@ -1,0 +1,28 @@
+apiversion: 1
+datasources:
+  - name: Prometheus (Metrics)
+    type: prometheus
+    url: http://prometheus:9090
+    access: proxy
+    isDefault: true
+    jsonData:
+      httpMethod: POST
+      exemplarTraceIdDestinations:
+        - name: Tempo (Traces)
+          datasourceUid: tempo
+
+  - name: Loki (Logs)
+    type: loki
+    url: http://loki:3100
+    access: proxy
+    jsonData:
+      maxLines: 1000
+
+  - name: Tempo (Traces)
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    basicAuth: false
+    jsonData:
+      lokiSearch:
+        datasourceUid: loki

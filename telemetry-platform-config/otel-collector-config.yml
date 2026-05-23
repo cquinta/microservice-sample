@@ -1,0 +1,46 @@
+receivers:
+  docker_stats:
+    endpoint: "unix:///var/run/docker.sock"
+    collection_interval: 10s
+    
+  filelog:
+    include: [/var/lib/docker/containers/*/*.log]
+    operators: 
+      - type: json_parser
+        timestamp:
+          parse_from: attributes.time
+          layout: '%Y-%m-%dT%H:%M:%S.%LZ'
+
+processors:
+  batch:
+  transform:
+    log_statements:
+      - context: log
+        statements:
+          # O "resource." garante que o Loki veja isso como uma Label pesquisável!
+          - set(resource.attributes["job"], "docker")
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    namespace: "docker"
+    send_timestamps: true
+    resource_to_telemetry_conversion:
+      enabled: true
+
+  otlphttp/loki:
+    endpoint: "http://loki:3100/otlp"
+
+  debug:
+
+service:
+  pipelines:
+    metrics:
+      receivers: [docker_stats]
+      processors: [batch]
+      exporters: [prometheus, debug]
+
+    logs:
+      receivers: [filelog]
+      processors: [transform, batch]
+      exporters: [otlphttp/loki, debug]
