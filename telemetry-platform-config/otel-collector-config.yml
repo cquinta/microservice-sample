@@ -1,46 +1,69 @@
 receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+      http:
+        endpoint: "0.0.0.0:4318"
+  hostmetrics:
+    root_path: /hostfs
+    collection_interval: 10s
+    scrapers:
+      cpu:
+      memory:
+      network:
+      disk:
+
   docker_stats:
     endpoint: "unix:///var/run/docker.sock"
     collection_interval: 10s
-    
-  filelog:
-    include: [/var/lib/docker/containers/*/*.log]
-    operators: 
-      - type: json_parser
-        timestamp:
-          parse_from: attributes.time
-          layout: '%Y-%m-%dT%H:%M:%S.%LZ'
+    timeout: 5s
+    provide_per_core_cpu_metrics: true
+    api_version: "1.25"
 
 processors:
   batch:
-  transform:
-    log_statements:
-      - context: log
-        statements:
-          # O "resource." garante que o Loki veja isso como uma Label pesquisável!
-          - set(resource.attributes["job"], "docker")
-
+    send_batch_size: 10
+ 
 exporters:
-  prometheus:
-    endpoint: "0.0.0.0:8889"
-    namespace: "docker"
-    send_timestamps: true
+  debug:
+    verbosity: detailed
+    
+  # NOVO: Exportador apontando para o Grafana Tempo
+  otlp/tempo: 
+    endpoint: "tempo:4317" 
+    tls:
+      insecure: true
+
+  prometheusremotewrite:
+    endpoint: "http://prometheus:9090/api/v1/write"
+    tls:
+      insecure: true
     resource_to_telemetry_conversion:
       enabled: true
-
-  otlphttp/loki:
+  
+  otlp_http/loki:
     endpoint: "http://loki:3100/otlp"
+    tls:
+      insecure: true
 
-  debug:
 
 service:
   pipelines:
-    metrics:
-      receivers: [docker_stats]
+    traces:
+      receivers: [otlp]
       processors: [batch]
-      exporters: [prometheus, debug]
+      exporters: [otlp/tempo,debug]
+
+    metrics:
+      receivers: [otlp, hostmetrics, docker_stats]
+      processors: [batch]
+      exporters: [prometheusremotewrite, debug]
 
     logs:
-      receivers: [filelog]
-      processors: [transform, batch]
-      exporters: [otlphttp/loki, debug]
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/loki, debug]
+    
+   
+  

@@ -3,7 +3,14 @@ name = "microservice-sub"
 version = "0.1.0"
 description = "Micosserviço de subtração"
 readme = "README.md"
-requires-python = ">=3.14"
+
 dependencies = [
     "fastapi[standard]",
+    "opentelemetry-api",
+    "opentelemetry-instrumentation-fastapi",
+    "opentelemetry-instrumentation-requests",
+    "opentelemetry-exporter-otlp",
+    "opentelemetry-exporter-prometheus==0.63b1",
+    "opentelemetry-instrumentation-httpx",
+    "opentelemetry-sdk",
 ]
