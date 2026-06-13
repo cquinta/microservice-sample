@@ -78,9 +78,9 @@ jobs:
         
       - name: Adicionar dependências de testar 
         run: |
-            cd ./mssub
+            cd ./mssub/app
             uv add --dev pytest
-            uv run .app/pytest test_main.py
+            uv run pytest test_main.py
 
 
       
