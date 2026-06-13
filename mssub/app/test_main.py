@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from config import Config
+from .config import Config
 
 from app.main import app
 
@@ -10,7 +10,11 @@ def test_read_root():
     """Testa se o endpoint raiz está respondendo corretamente."""
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"message": "Microsserviço de Subtração"}
+    data = response.json()
+    assert data["message"] == "Microsserviço de Subtração"
+    assert data["host"] == Config.HOST
+    assert data["versão"] == Config.VERSION
+    
 
 
 def test_operacao_subtracao_sucesso():
