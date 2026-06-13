@@ -7,6 +7,7 @@ logger = logging.getLogger("fastapi-service-sub")
 
 router = APIRouter()
 
+
 class CalcInput(BaseModel):
     a: int
     b: int
@@ -17,4 +18,3 @@ async def calc_sum(data: CalcInput):
     result = data.a - data.b
     logger.info(f"Subtraction: {data.a} - {data.b} = {result}")
     return {"result": result, "op": "sub"}
-

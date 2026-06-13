@@ -10,5 +10,9 @@ COPY . /app
 WORKDIR /app
 RUN uv sync --frozen --no-cache
 
+
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost/health || exit 1
+
 # Run the application.
 CMD ["/app/.venv/bin/fastapi", "run", "app/main.py", "--port", "80", "--host", "0.0.0.0"]
