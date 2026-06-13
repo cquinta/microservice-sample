@@ -74,10 +74,12 @@ jobs:
           python-version: '3.11' # Você pode ajustar para a versão que está usando
 
       - name: Instalar dependências e executar testes
+        uses: astral-sh/setup-uv@v3
         run: |
           cd ./mssub
           uv add --dev pytest
-          uv run pytest -v app/test_main.py
+          uv sync --all-extras --dev
+          uv run pytest -v test_main.py
 
       - name: Fazer login no Docker Hub
         uses: docker/login-action@v3
