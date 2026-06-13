@@ -24,11 +24,10 @@ jobs:
       - name: Construir e publicar a imagem da API
         uses: docker/build-push-action@v6
         with:
-          context: ./api_service
+          context: ./msapi
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:${{ env.BRANCH_NAME }}
-         # cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache
-         # cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:buildcache,mode=max
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-api:${{ github.sha }}
+         
 
   build-and-push-soma:
     runs-on: ubuntu-latest
@@ -42,14 +41,26 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Configurar ambiente Python para testes
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Você pode ajustar para a versão que está usando
+
+      - name: Instalar dependências e executar testes
+        run: |
+          python -m pip install --upgrade pip
+          pip install fastapi pydantic httpx pytest
+          cd ./mssum
+          pytest -v app/test_main.py
+
+
       - name: Construir e publicar a imagem do serviço de soma
         uses: docker/build-push-action@v6
         with:
-          context: ./grpc_service_soma
+          context: ./mssum
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:${{ env.BRANCH_NAME }}
-          #cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache
-          #cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:buildcache,mode=max
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-soma:${{ github.sha }}
+         
 
   build-and-push-sub:
     runs-on: ubuntu-latest
@@ -57,6 +68,22 @@ jobs:
       - name: Checar o código do repositório
         uses: actions/checkout@v4
 
+      - name: Configurar ambiente Python para testes
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Você pode ajustar para a versão que está usando
+
+      - name: instalar o uv 
+        uses: astral-sh/setup-uv@v3
+        
+      - name: Adicionar dependências de testar 
+        run: |
+            cd ./mssub/app
+            uv add --dev pytest
+            uv run pytest test_main.py
+
+
+      
       - name: Fazer login no Docker Hub
         uses: docker/login-action@v3
         with:
@@ -66,8 +93,7 @@ jobs:
       - name: Construir e publicar a imagem do serviço de subtração
         uses: docker/build-push-action@v6
         with:
-          context: ./grpc_service_sub
+          context: ./mssub
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:${{ env.BRANCH_NAME }}
-          #cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache
-          #cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:buildcache,mode=max
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mocapp-sub:${{ github.sha }}
+          

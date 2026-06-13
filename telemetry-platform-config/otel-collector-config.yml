@@ -1,0 +1,69 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+      http:
+        endpoint: "0.0.0.0:4318"
+  hostmetrics:
+    root_path: /hostfs
+    collection_interval: 10s
+    scrapers:
+      cpu:
+      memory:
+      network:
+      disk:
+
+  docker_stats:
+    endpoint: "unix:///var/run/docker.sock"
+    collection_interval: 10s
+    timeout: 5s
+    provide_per_core_cpu_metrics: true
+    api_version: "1.25"
+
+processors:
+  batch:
+    send_batch_size: 10
+ 
+exporters:
+  debug:
+    verbosity: detailed
+    
+  # NOVO: Exportador apontando para o Grafana Tempo
+  otlp/tempo: 
+    endpoint: "tempo:4317" 
+    tls:
+      insecure: true
+
+  prometheusremotewrite:
+    endpoint: "http://prometheus:9090/api/v1/write"
+    tls:
+      insecure: true
+    resource_to_telemetry_conversion:
+      enabled: true
+  
+  otlp_http/loki:
+    endpoint: "http://loki:3100/otlp"
+    tls:
+      insecure: true
+
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/tempo,debug]
+
+    metrics:
+      receivers: [otlp, hostmetrics, docker_stats]
+      processors: [batch]
+      exporters: [prometheusremotewrite, debug]
+
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp_http/loki, debug]
+    
+   
+  
