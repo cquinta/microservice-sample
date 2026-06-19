@@ -1,0 +1,34 @@
+FROM python:3.14-slim AS builder
+
+# Install uv.
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+WORKDIR /app
+
+ENV UV_PYTHON_DOWNLOADS=never \
+    UV_PYTHON_PREFERENCE=system
+
+COPY pyproject.toml ./
+
+RUN uv sync --no-cache
+
+# Copy the application into the container.
+COPY . .
+
+# Install the application dependencies.
+
+RUN uv sync --no-cache
+
+# Run the application.
+FROM python:3.14-slim
+
+WORKDIR /app
+
+RUN useradd -m appuser && chown -R appuser /app
+USER appuser
+
+COPY --chown=appuser:appuser --from=builder /app /app
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+CMD ["fastapi", "run", "app/main.py", "--port", "8000", "--host", "0.0.0.0"]
